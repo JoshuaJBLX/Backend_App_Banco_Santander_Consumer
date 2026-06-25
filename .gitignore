@@ -1,0 +1,15 @@
+@"
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.env
+*.log
+.pytest_cache/
+.mypy_cache/
+.idea/
+.vscode/
+*.sqlite3
+"@ | Out-File -Encoding utf8 .gitignore

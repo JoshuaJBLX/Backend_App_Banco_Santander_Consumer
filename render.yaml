@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: core-andino-backend
+    runtime: docker
+    plan: free
+    region: ohio
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: core-andino-db
+          property: connectionString
+      - key: CORE_DATABASE_URL
+        sync: false
+      - key: SECRET_KEY
+        generateValue: true
+      - key: PORT
+        value: 8003
+      - key: ALGORITHM
+        value: HS256
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: 480
+      - key: CORE_BACKEND_URL
+        value: ""
+    healthCheckPath: /
+
+databases:
+  - name: core-andino-db
+    plan: free
+    region: ohio
+    databaseName: bd_core_mobile

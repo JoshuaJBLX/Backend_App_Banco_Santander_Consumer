@@ -1,18 +1,21 @@
 from typing import Optional
-from datetime import datetime, timezone, date
+from datetime import datetime, timezone
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc, func, Date
 from app.models.mdl_cartera import CarteraDiaria
 from app.models.mdl_clientes import Cliente
 
-def listar_por_asesor(db: Session, asesor_id: str, fecha: date) -> list[dict]:
+def listar_por_asesor(db: Session, asesor_id: str, fecha: Optional[str] = None) -> list[dict]:
     """Cartera del asesor para una fecha, ordenada por score (RF-09)."""
+    cond_fecha = (
+        func.cast(fecha, Date) if fecha is not None else func.current_date()
+    )
     filas = (
         db.query(CarteraDiaria, Cliente)
         .join(Cliente, Cliente.id == CarteraDiaria.cliente_id)
         .filter(
             CarteraDiaria.asesor_id == asesor_id,
-            CarteraDiaria.fecha_asignacion == fecha,
+            CarteraDiaria.fecha_asignacion == cond_fecha,
         )
         .order_by(desc(CarteraDiaria.score_prioridad))
         .all()

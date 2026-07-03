@@ -1,5 +1,4 @@
 from typing import Optional
-from datetime import date
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.core.cfg_database import get_db
@@ -11,13 +10,12 @@ router = APIRouter()
 
 @router.get("", response_model=list[CarteraItemOut])
 def listar_cartera(
-    fecha: Optional[date] = None,
+    fecha: Optional[str] = None,
     db: Session = Depends(get_db),
     asesor: dict = Depends(get_current_asesor),
 ):
     """Cartera del dia del asesor autenticado (RF-04/RF-09)."""
-    f = fecha or date.today()
-    return rep_cartera.listar_por_asesor(db, asesor["asesor_id"], f)
+    return rep_cartera.listar_por_asesor(db, asesor["asesor_id"], fecha)
 
 @router.post("/{cartera_id}/visita")
 def marcar_visita(

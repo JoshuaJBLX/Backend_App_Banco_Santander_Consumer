@@ -19,7 +19,13 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # apps moviles (Flutter / Android) — ajustar en produccion
+    allow_origins=[
+        "https://app-core-banco-santander.vercel.app",
+        "https://app-core-banco-santander-git-main-bl-inderex.vercel.app",
+        "https://app-core-banco-santander-ody11kr7n-bl-inderex.vercel.app",
+        "http://localhost:5173",
+        "http://localhost:8003",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

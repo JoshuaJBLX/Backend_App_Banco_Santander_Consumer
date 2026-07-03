@@ -27,17 +27,27 @@ def run():
         db.add(agencia)
         db.flush()
 
-        asesor = Asesor(
-            cod_asesor="A001",
-            codigo_empleado="0001",
-            nombres="Carlos",
-            apellidos="Ramirez",
-            agencia_id=agencia.id,
-            perfil="operador",
-            password_hash=hash_password("1234"),
-        )
-        db.add(asesor)
-        db.flush()
+        asesores_data = [
+            ("A001", "0001", "Carlos",   "Ramirez",  "operador"),
+            ("A002", "0002", "Maria",    "Lopez",    "operador"),
+            ("A003", "0003", "Pedro",    "Garcia",   "supervisor"),
+            ("A004", "0010", "Roberto",  "Gutierrez","operador"),
+        ]
+        for cod_as, cod_emp, nom, ape, perfil in asesores_data:
+            asesor = Asesor(
+                cod_asesor=cod_as,
+                codigo_empleado=cod_emp,
+                nombres=nom,
+                apellidos=ape,
+                agencia_id=agencia.id,
+                perfil=perfil,
+                password_hash=hash_password("1234"),
+            )
+            db.add(asesor)
+            db.flush()
+
+        # Usar el primer asesor (0001) para la demo
+        asesor = db.query(Asesor).filter(Asesor.codigo_empleado == "0001").first()
 
         demo = [
             ("Maria Quispe Huaman",  "44455667", "RECUPERACION_MORA", "alta",   88, 8500),

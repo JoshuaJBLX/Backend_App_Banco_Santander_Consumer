@@ -6,7 +6,11 @@ from app.models.mdl_cartera import CarteraDiaria
 from app.models.mdl_clientes import Cliente
 
 def listar_por_asesor(db: Session, asesor_id: str, fecha: Optional[str] = None) -> list[dict]:
-    """Cartera del asesor para una fecha, ordenada por score (RF-09)."""
+    """Cartera del asesor para una fecha, ordenada por score (RF-09).
+    
+    Si la fecha indicada no tiene registros, obtiene la cartera más reciente
+    disponible (la última fecha con datos).
+    """
     cond_fecha = (
         func.cast(fecha, Date) if fecha is not None else func.current_date()
     )
@@ -20,6 +24,24 @@ def listar_por_asesor(db: Session, asesor_id: str, fecha: Optional[str] = None) 
         .order_by(desc(CarteraDiaria.score_prioridad))
         .all()
     )
+    # Si no hay datos para la fecha, buscar la fecha más reciente con datos
+    if not filas:
+        ultima_fecha = (
+            db.query(func.max(CarteraDiaria.fecha_asignacion))
+            .filter(CarteraDiaria.asesor_id == asesor_id)
+            .scalar()
+        )
+        if ultima_fecha is not None:
+            filas = (
+                db.query(CarteraDiaria, Cliente)
+                .join(Cliente, Cliente.id == CarteraDiaria.cliente_id)
+                .filter(
+                    CarteraDiaria.asesor_id == asesor_id,
+                    CarteraDiaria.fecha_asignacion == ultima_fecha,
+                )
+                .order_by(desc(CarteraDiaria.score_prioridad))
+                .all()
+            )
     return [
         {
             "id": str(c.id),
